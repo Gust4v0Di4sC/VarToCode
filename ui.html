@@ -1,0 +1,587 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      /* =========================================================
+         Figma-native palette (usa tokens injetados pelo Figma quando
+         figma.showUI(..., { themeColors: true })
+         ========================================================= */
+      :root{
+        --bg: var(--figma-color-bg, #ffffff);
+        --bg-secondary: var(--figma-color-bg-secondary, #f5f5f5);
+        --bg-tertiary: var(--figma-color-bg-tertiary, #eeeeee);
+
+        --text: var(--figma-color-text, #1e1e1e);
+        --text-secondary: var(--figma-color-text-secondary, #6b6b6b);
+
+        --border: var(--figma-color-border, rgba(0,0,0,.12));
+        --border-strong: var(--figma-color-border-strong, rgba(0,0,0,.18));
+
+        --brand: var(--figma-color-bg-brand, #0d99ff);
+        --brand-hover: var(--figma-color-bg-brand-hover, #0b8ce6);
+        --onbrand: var(--figma-color-text-onbrand, #ffffff);
+
+        --danger: var(--figma-color-bg-danger, #f24822);
+        --success: var(--figma-color-bg-success, #14ae5c);
+
+        --hover: var(--figma-color-bg-hover, rgba(0,0,0,.06));
+        --pressed: var(--figma-color-bg-pressed, rgba(0,0,0,.10));
+        --disabled: var(--figma-color-bg-disabled, rgba(0,0,0,.04));
+
+        --focus: var(--figma-color-border-selected, #0d99ff);
+        --focus-ring: rgba(13, 153, 255, .35);
+
+        --ui: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+        --radius: 8px;
+        --radius-sm: 6px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root{
+          --bg: var(--figma-color-bg, #2c2c2c);
+          --bg-secondary: var(--figma-color-bg-secondary, #383838);
+          --bg-tertiary: var(--figma-color-bg-tertiary, #444444);
+          --text: var(--figma-color-text, #ffffff);
+          --text-secondary: var(--figma-color-text-secondary, rgba(255,255,255,.72));
+          --border: var(--figma-color-border, rgba(255,255,255,.12));
+          --border-strong: var(--figma-color-border-strong, rgba(255,255,255,.18));
+          --hover: var(--figma-color-bg-hover, rgba(255,255,255,.06));
+          --pressed: var(--figma-color-bg-pressed, rgba(255,255,255,.10));
+          --disabled: var(--figma-color-bg-disabled, rgba(255,255,255,.04));
+        }
+      }
+
+      *{ box-sizing: border-box; }
+      html, body{ height: 100%; }
+
+      body{
+        margin: 0;
+        padding: 10px;
+        font: 11px/1.35 var(--ui);
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .app{
+        height: 100%;
+        display: grid;
+        gap: 10px;
+        grid-template-rows: auto 1fr;
+      }
+
+      .header{
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .title{ display: grid; gap: 2px; min-width: 0; }
+      .title h1{
+        margin: 0;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .1px;
+      }
+      .title p{
+        margin: 0;
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+
+      .badge{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .badge-dot{
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+        opacity: .8;
+      }
+
+      .card{
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--bg);
+        overflow: hidden;
+        height: 100%;
+        min-height: 0;
+      }
+
+      .card .section{
+        height: 100%;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+        grid-template-rows: auto auto 1fr auto auto;
+        min-height: 0;
+      }
+
+      .row{
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .row-actions{
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 8px;
+        justify-content: flex-start;
+      }
+
+      button{
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .12s ease, border-color .12s ease, transform .05s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+      }
+
+      button:hover{ background: color-mix(in srgb, var(--bg-secondary) 70%, var(--hover)); }
+      button:active{ background: color-mix(in srgb, var(--bg-secondary) 70%, var(--pressed)); transform: translateY(1px); }
+      button:focus{
+        outline: none;
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+      }
+      button[disabled]{
+        opacity: .6;
+        cursor: not-allowed;
+        background: var(--disabled);
+        transform: none;
+      }
+
+      /* ✅ Estado ativo (azul) como “selected” */
+      .btn-active{
+        background: var(--brand) !important;
+        color: var(--onbrand) !important;
+        border-color: transparent !important;
+      }
+      .btn-active:hover{ background: var(--brand-hover) !important; }
+
+      .btn-icon{
+        width: 14px;
+        height: 14px;
+        flex: 0 0 14px;
+        opacity: .95;
+      }
+      .btn-icon path,
+      .btn-icon rect,
+      .btn-icon line,
+      .btn-icon polyline{
+        stroke-width: 1.5;
+      }
+
+      .kbd{
+        font-family: var(--mono);
+        font-size: 9px;
+        padding: 1px 5px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        background: var(--bg);
+        flex: 0 0 auto;
+      }
+
+      .row-actions button{
+        padding: 5px 8px;
+        border-radius: var(--radius-sm);
+        font-size: 10.5px;
+        gap: 6px;
+        line-height: 1.05;
+        white-space: nowrap;
+      }
+
+      #tw, #raw{ flex: 0 0 140px; }
+      #styles{ flex: 0 0 220px; }
+
+      .styles-btn{
+        justify-content: space-between;
+        padding-right: 6px;
+      }
+      .styles-left{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      /* Select dentro do botão ativo fica legível */
+      .btn-active select.styles-scope{
+        background: rgba(255,255,255,.18);
+        border-color: rgba(255,255,255,.22);
+        color: var(--onbrand);
+      }
+
+      select.styles-scope{
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        font: 10px/1 var(--mono);
+        color: var(--text);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 18px 4px 8px;
+        cursor: pointer;
+        outline: none;
+        flex: 0 0 auto;
+      }
+      select.styles-scope{
+        background-image:
+          linear-gradient(45deg, transparent 50%, currentColor 50%),
+          linear-gradient(135deg, currentColor 50%, transparent 50%),
+          linear-gradient(to right, transparent, transparent);
+        background-position:
+          calc(100% - 11px) 55%,
+          calc(100% - 6px) 55%,
+          0 0;
+        background-size: 5px 5px, 5px 5px, 100% 100%;
+        background-repeat: no-repeat;
+        opacity: .95;
+      }
+      select.styles-scope:focus{
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+      }
+
+      textarea{
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        padding: 10px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 11px;
+        line-height: 1.45;
+        resize: none;
+        outline: none;
+      }
+      textarea:focus{
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+      }
+
+      .status{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 18px;
+        color: var(--text-secondary);
+        font-size: 11px;
+      }
+      .status .dot{
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+        opacity: .75;
+      }
+      .status.ok{ color: color-mix(in srgb, var(--success) 70%, var(--text-secondary)); }
+      .status.ok .dot{ background: var(--success); opacity: .9; }
+      .status.err{ color: color-mix(in srgb, var(--danger) 75%, var(--text-secondary)); }
+      .status.err .dot{ background: var(--danger); opacity: .9; }
+
+      .status .msg{ min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .status .action{
+        font-family: var(--mono);
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text-secondary);
+        flex: 0 0 auto;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .hint{
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 11px;
+      }
+      .hint strong{ color: var(--text); }
+
+      .footer{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="header">
+        <div class="title">
+          <h1>Variables Exporter</h1>
+          <p>Tailwind v4.1 • JSON cru • Styles</p>
+        </div>
+
+        <div class="badge" title="Último arquivo gerado">
+          <span class="badge-dot"></span>
+          <span id="meta">—</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section">
+          <div class="row row-actions">
+            <button id="tw" class="btn-active" title="Gera figma.tokens.css (Tailwind v4.1)">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6.2 4.3 3 8l3.2 3.7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9.8 4.3 13 8l-3.2 3.7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              CSS
+              <span class="kbd">TW</span>
+            </button>
+
+            <button id="raw" title="Gera JSON cru de variables/collections">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M4 4.5h9" stroke="currentColor" stroke-linecap="round"/>
+                <path d="M4 8h9" stroke="currentColor" stroke-linecap="round"/>
+                <path d="M4 11.5h6" stroke="currentColor" stroke-linecap="round"/>
+                <path d="M2.5 4.5h.5M2.5 8h.5M2.5 11.5h.5" stroke="currentColor" stroke-linecap="round"/>
+              </svg>
+              JSON cru
+              <span class="kbd">RAW</span>
+            </button>
+
+            <button id="styles" class="styles-btn" title="Exporta styles (escopo selecionado)">
+              <span class="styles-left">
+                <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="3.2" y="3" width="9.6" height="4.2" rx="1.2" stroke="currentColor"/>
+                  <rect x="3.2" y="8.8" width="9.6" height="4.2" rx="1.2" stroke="currentColor"/>
+                </svg>
+                Styles
+              </span>
+
+              <select id="stylesScope" class="styles-scope" aria-label="Escopo do export">
+                <option value="page">PAGE</option>
+                <option value="document">DOC</option>
+              </select>
+            </button>
+          </div>
+
+          <div class="row">
+            <button id="copy" disabled title="Copia o conteúdo do painel">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="6" y="5" width="7" height="8" rx="1.2" stroke="currentColor"/>
+                <path d="M5 11H4a1 1 0 0 1-1-1V3.2A1.2 1.2 0 0 1 4.2 2H11a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-linecap="round"/>
+              </svg>
+              Copiar
+            </button>
+
+            <button id="download" disabled title="Baixa o arquivo gerado">
+              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 2.5v7" stroke="currentColor" stroke-linecap="round"/>
+                <path d="M5.5 7.5 8 10l2.5-2.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 13.2h10" stroke="currentColor" stroke-linecap="round"/>
+              </svg>
+              Baixar
+            </button>
+          </div>
+
+          <textarea id="out" placeholder="Escolha uma opção de export..."></textarea>
+
+          <div id="status" class="status">
+            <span class="dot"></span>
+            <span id="statusAction" class="action" hidden>—</span>
+            <span id="statusText" class="msg">Pronto.</span>
+          </div>
+
+          <div class="footer">
+            <div class="hint">
+              <span class="kbd">Import</span>
+              <span><strong>@import "tailwindcss";</strong> + <strong>@import "./figma.tokens.css";</strong></span>
+            </div>
+            <div class="hint">
+              <span class="kbd">Dica</span>
+              <span>Para modo: use <strong>data-theme="dark"</strong> no HTML.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const out = document.getElementById("out");
+      const statusEl = document.getElementById("status");
+      const statusActionEl = document.getElementById("statusAction");
+      const statusTextEl = document.getElementById("statusText");
+      const meta = document.getElementById("meta");
+      const btnCopy = document.getElementById("copy");
+      const btnDownload = document.getElementById("download");
+
+      const btnTw = document.getElementById("tw");
+      const btnRaw = document.getElementById("raw");
+      const btnStyles = document.getElementById("styles");
+      const stylesScope = document.getElementById("stylesScope");
+
+      let last = { filename: null, mime: null };
+
+      /* ✅ toggle visual de ativo (azul) */
+      const topButtons = [btnTw, btnRaw, btnStyles];
+      function setActive(btn){
+        topButtons.forEach(b => b.classList.remove("btn-active"));
+        btn.classList.add("btn-active");
+      }
+
+      function parseActionPrefix(text){
+        const s = String(text || "");
+        if (s.charAt(0) !== "(") return { action: null, text: s };
+        const end = s.indexOf(")");
+        if (end <= 1) return { action: null, text: s };
+        const action = s.slice(1, end).trim();
+        const rest = s.slice(end + 1).trim();
+        return { action: action || null, text: rest || s };
+      }
+
+      function setStatus(type, text, action){
+        statusEl.classList.remove("ok", "err");
+        if (type) statusEl.classList.add(type);
+
+        if (action){
+          statusActionEl.hidden = false;
+          statusActionEl.textContent = action;
+        } else {
+          statusActionEl.hidden = true;
+          statusActionEl.textContent = "—";
+        }
+
+        statusTextEl.textContent = text || "";
+      }
+
+      function setReady(payload) {
+        out.value = payload.content || "";
+        last.filename = payload.filename;
+        last.mime = payload.mime;
+        meta.textContent = payload.filename || "—";
+        setStatus("ok", "Gerado com sucesso.", payload.kind ? payload.kind.toUpperCase() : null);
+        btnCopy.disabled = false;
+        btnDownload.disabled = false;
+      }
+
+      async function copyToClipboard(text) {
+        const value = String(text || "");
+
+        try {
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            await navigator.clipboard.writeText(value);
+            return true;
+          }
+        } catch (_) {}
+
+        try {
+          out.focus();
+          out.select();
+          out.setSelectionRange(0, out.value.length);
+          const ok = document.execCommand("copy");
+          out.setSelectionRange(out.value.length, out.value.length);
+          return !!ok;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      btnTw.onclick = () => {
+        setActive(btnTw);
+        setStatus(null, "Exportando CSS (Tailwind v4.1)...", "EXPORT_TW_V41");
+        parent.postMessage({ pluginMessage: { type: "EXPORT_TW_V41" } }, "*");
+      };
+
+      btnRaw.onclick = () => {
+        setActive(btnRaw);
+        setStatus(null, "Exportando JSON cru...", "EXPORT_RAW_JSON");
+        parent.postMessage({ pluginMessage: { type: "EXPORT_RAW_JSON" } }, "*");
+      };
+
+      function exportStyles(scope){
+        setActive(btnStyles);
+        const scan = (scope === "document") ? "document" : "page";
+        setStatus(null, `Exportando styles (${scan})...`, "EXPORT_COLLECTIONS_STYLES_JSON");
+        parent.postMessage(
+          { pluginMessage: { type: "EXPORT_COLLECTIONS_STYLES_JSON", scan } },
+          "*"
+        );
+      }
+
+      btnStyles.onclick = () => exportStyles(stylesScope.value);
+
+      /* abrir/trocar select NÃO dispara export e NÃO muda ativo */
+      stylesScope.addEventListener("click", (e) => e.stopPropagation());
+      stylesScope.addEventListener("change", (e) => e.stopPropagation());
+
+      document.getElementById("copy").onclick = async () => {
+        const ok = await copyToClipboard(out.value || "");
+        if (ok) setStatus("ok", "Copiado para a área de transferência.", "COPY");
+        else setStatus("err", "Não foi possível copiar. Selecione o texto e copie manualmente.", "COPY");
+      };
+
+      document.getElementById("download").onclick = () => {
+        const mime = last.mime || "text/plain";
+        const filename = last.filename || "export.txt";
+        const blob = new Blob([out.value || ""], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        setStatus("ok", `Download: ${filename}`, "DOWNLOAD");
+      };
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") parent.postMessage({ pluginMessage: { type: "CLOSE" } }, "*");
+      });
+
+      onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === "EXPORT_RESULT") setReady(msg.payload);
+
+        if (msg.type === "EXPORT_ERROR") {
+          const parsed = parseActionPrefix(msg.message);
+          setStatus("err", `Erro: ${parsed.text}`, parsed.action);
+        }
+      };
+    </script>
+  </body>
+</html>
