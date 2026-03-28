@@ -16,7 +16,11 @@ No manual copying. No external services. No data leaves your Figma file.
 
 </p>
 
-
+<p align="center">
+  <a href="./src/assets/vartocode-demo.mp4">
+    ▶ Watch preview video
+  </a>
+</p>
 ---
 
 ## ✨ Features
